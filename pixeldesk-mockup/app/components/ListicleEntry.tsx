@@ -8,6 +8,7 @@ export default function ListicleEntry({
   goodFor,
   watchOut,
   tags,
+  affiliateUrl,
 }: {
   rank: number;
   name: string;
@@ -16,6 +17,7 @@ export default function ListicleEntry({
   goodFor: string;
   watchOut: string;
   tags: Tag[];
+  affiliateUrl?: string;
 }) {
   return (
     <article
@@ -70,9 +72,20 @@ export default function ListicleEntry({
             </div>
           </div>
 
-          <button className="text-[12px] font-mono font-medium text-deep bg-mint hover:bg-mint-dim px-4 py-2 rounded transition-colors">
-            ดูราคา/ซื้อ →
-          </button>
+          {affiliateUrl ? (
+            <a
+              href={affiliateUrl}
+              target="_blank"
+              rel="nofollow sponsored noopener"
+              className="inline-block text-[12px] font-mono font-medium text-deep bg-mint hover:bg-mint-dim px-4 py-2 rounded transition-colors"
+            >
+              ดูราคา/ซื้อ →
+            </a>
+          ) : (
+            <span className="inline-block text-[12px] font-mono font-medium text-slate bg-panel-raised border border-line px-4 py-2 rounded cursor-not-allowed">
+              เร็วๆนี้
+            </span>
+          )}
         </div>
       </div>
     </article>
