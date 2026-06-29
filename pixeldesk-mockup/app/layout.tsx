@@ -4,19 +4,16 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://pixeldeskth.com"),
   title: {
-    default: "pixeldeskth — รีวิวหนัง ดูได้ที่ไหนบ้าง Netflix, Viu, HBO Max, Apple TV",
+    default: "pixeldeskth — แนะนำหนัง Netflix ดูอะไรดี",
     template: "%s | pixeldeskth",
   },
   description:
-    "รีวิวหนังภาษาไทยตรงประเด็น พร้อมเช็คว่าดูได้ที่ไหนบ้าง Netflix, Viu, HBO Max, Apple TV และแพลตฟอร์มอื่น อัปเดตทุกวัน",
+    "แนะนำหนัง Netflix ดูอะไรดี รีวิวหนังพร้อมเช็คว่าดูได้ที่ไหนบ้าง อัปเดตทุกวัน",
   keywords: [
-    "รีวิวหนัง",
-    "หนังออนไลน์",
-    "ดูหนังที่ไหน",
-    "Netflix หนังน่าดู",
-    "Viu หนัง",
-    "HBO Max หนัง",
-    "Apple TV หนัง",
+    "แนะนำหนัง Netflix",
+    "ดูหนัง Netflix อะไรดี",
+    "รีวิวหนัง สปอยล์",
+    "หนังเรื่องนี้ดูได้ที่ไหน",
   ],
   openGraph: {
     type: "website",

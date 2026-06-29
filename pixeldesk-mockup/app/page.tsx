@@ -211,7 +211,7 @@ export default async function HomePage() {
       <div style={{ padding: "2rem 1.5rem" }}>
         <div style={{ marginBottom: "2rem", maxWidth: 720 }}>
           <h1 className={pixelFont.className} style={{ fontSize: 16, color: "#fff", margin: "0 0 12px", lineHeight: 1.6 }}>
-            แนะนำหนังน่าดูบน Netflix, HBO Max, Apple TV และ Viu
+            แนะนำหนัง Netflix ดูอะไรดี พร้อมหนังใหม่จาก HBO Max, Apple TV และ Viu
           </h1>
           <p style={{ fontSize: 14, color: COLORS.muted, lineHeight: 1.7 }}>
             pixeldeskth รวมรีวิวหนังภาษาไทยต้นฉบับ พร้อมเช็คว่าหนังเรื่องที่อยากดู
@@ -223,6 +223,39 @@ export default async function HomePage() {
         {providers.map((p, i) => (
           <MovieRow key={p.slug} title={"หนัง " + p.name.toUpperCase()} movies={providerMovies[i]} />
         ))}
+
+        <div style={{ marginTop: "3rem", maxWidth: 760 }}>
+          <h2 className={pixelFont.className} style={{ fontSize: 14, color: "#fff", margin: "0 0 14px", lineHeight: 1.6 }}>
+            แนะนำหนัง Netflix ดูอะไรดี เช็คได้ที่ pixeldeskth
+          </h2>
+          <p style={{ fontSize: 14, color: COLORS.muted, lineHeight: 1.8, margin: "0 0 14px" }}>
+            หลายคนเปิด Netflix แล้วเจอหนังให้เลือกเยอะจนตัดสินใจไม่ได้ pixeldeskth
+            แก้ปัญหานี้ด้วยการรวบรวมหนัง Netflix ที่น่าดูมาไว้ในที่เดียว
+            พร้อมรีวิวภาษาไทยที่เขียนขึ้นใหม่ทั้งหมด ไม่ใช่แปลตรงจากเรื่องย่อต้นฉบับ
+            เพื่อให้อ่านเข้าใจง่ายและได้มุมมองวิเคราะห์จริง ไม่ใช่แค่สรุปพล็อตเรื่อง
+          </p>
+          <p style={{ fontSize: 14, color: COLORS.muted, lineHeight: 1.8, margin: "0 0 14px" }}>
+            แต่ละรีวิวบนเว็บนี้บอกครบทั้งจุดเด่น จุดสังเกต คำถามที่พบบ่อยเกี่ยวกับหนังเรื่องนั้น
+            และที่สำคัญคือบอกชัดว่าหนังเรื่องไหนดูได้บนแพลตฟอร์มไหน ไม่ต้องเปิดสลับหลายแอป
+            เพื่อหาว่าหนังเรื่องที่อยากดูอยู่ที่ไหน
+          </p>
+          <p style={{ fontSize: 14, color: COLORS.muted, lineHeight: 1.8, margin: "0 0 14px" }}>
+            นอกจาก Netflix แล้ว pixeldeskth ยังครอบคลุมหนังจาก HBO Max ที่เด่นเรื่องหนังฟอร์มยักษ์
+            และซีรีส์ตำนานจากหลายค่าย Apple TV ที่มีงานคุณภาพสูงแม้จำนวนจะน้อยกว่า
+            และ Viu ที่อัปเดตซีรีส์เอเชียได้รวดเร็ว ทุกแพลตฟอร์มมีหน้ารวมหนังของตัวเอง
+            ที่อัปเดตทุกวันให้ตามหนังใหม่ที่เพิ่งลงสตรีมมิ่ง
+          </p>
+          <p style={{ fontSize: 14, color: COLORS.muted, lineHeight: 1.8 }}>
+            ดูหนังตามแพลตฟอร์มที่ใช้อยู่ได้ที{"่"}
+            <Link href="/platforms" style={{ color: COLORS.gold, textDecoration: "underline" }}>
+              หน้ารวมแพลตฟอร์ม
+            </Link>
+            {" "}หรือไล่ดูรีวิวหนังทั้งหมดได้ที่{" "}
+            <Link href="/movies" style={{ color: COLORS.gold, textDecoration: "underline" }}>
+              หน้ารีวิวหนัง
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
