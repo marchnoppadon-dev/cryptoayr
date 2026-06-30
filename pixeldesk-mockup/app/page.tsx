@@ -6,19 +6,13 @@ import Image from "next/image";
 const pixelFont = Press_Start_2P({ subsets: ["latin"], weight: "400" });
 
 const COLORS = {
-  bg: "#1c1320",
-  surf: "#2a2030",
-  gold: "#ffd24a",
+  bg: "#13090f",
+  surf: "#1f1419",
+  card: "#1f1419",
+  cardBorder: "#3d2a35",
+  accent: "#ff7a5c",
   text: "#f5f0e8",
   muted: "#b8a8b8",
-};
-const CARD_COLORS = ["#e0608f", "#e0a83c", "#8b7fd1", "#2bb89c", "#3a8bd8"];
-const CARD_TEXT: Record<string, string> = {
-  "#e0608f": "#3d1428",
-  "#e0a83c": "#412a06",
-  "#8b7fd1": "#241f57",
-  "#2bb89c": "#0a3b30",
-  "#3a8bd8": "#0c2c4d",
 };
 
 async function getFeaturedMovie() {
@@ -38,6 +32,15 @@ async function getFeaturedMovie() {
 async function getProviders() {
   const { data } = await supabase.from("providers").select("id, name, slug").order("name");
   return data ?? [];
+}
+
+async function getHeroTrailerOverride() {
+  const { data } = await supabase
+    .from("site_settings")
+    .select("hero_trailer_url")
+    .eq("id", 1)
+    .maybeSingle();
+  return data?.hero_trailer_url ?? null;
 }
 
 async function getMoviesForProvider(providerId: number) {
@@ -72,65 +75,71 @@ function MovieRow({ title, movies }: { title: string; movies: any[] }) {
       <div
         style={{
           display: "flex",
-          gap: 12,
+          gap: 8,
           overflowX: "auto",
           paddingBottom: 8,
         }}
       >
-        {movies.map((m, i) => {
-          const bg = CARD_COLORS[i % CARD_COLORS.length];
-          return (
-            <Link
-              key={m.slug}
-              href={"/movies/" + m.slug}
+        {movies.map((m) => (
+          <Link
+            key={m.slug}
+            href={"/movies/" + m.slug}
+            style={{
+              textDecoration: "none",
+              flex: "0 0 112px",
+            }}
+          >
+            <div
               style={{
-                background: bg,
-                borderRadius: 10,
-                padding: 10,
-                textDecoration: "none",
-                flex: "0 0 140px",
+                width: "100%",
+                height: 152,
+                background: COLORS.surf,
+                borderRadius: "6px 6px 0 0",
+                border: "1px solid " + COLORS.cardBorder,
+                borderBottom: "none",
+                overflow: "hidden",
               }}
             >
-              <div
-                style={{
-                  width: "100%",
-                  height: 88,
-                  background: "rgba(0,0,0,0.15)",
-                  borderRadius: 5,
-                  marginBottom: 8,
-                  overflow: "hidden",
-                }}
-              >
-                {m.poster_path && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={"https://image.tmdb.org/t/p/w200" + m.poster_path}
-                    alt={m.title_th}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
-                )}
-              </div>
-              <p className={pixelFont.className} style={{ fontSize: 9, color: CARD_TEXT[bg], margin: "0 0 6px", lineHeight: 1.5 }}>
+              {m.poster_path && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={"https://image.tmdb.org/t/p/w200" + m.poster_path}
+                  alt={m.title_th}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              )}
+            </div>
+            <div
+              style={{
+                background: COLORS.card,
+                border: "1px solid " + COLORS.cardBorder,
+                borderTop: "none",
+                borderRadius: "0 0 6px 6px",
+                padding: 8,
+              }}
+            >
+              <p style={{ fontSize: 11, fontWeight: 600, color: COLORS.text, margin: "0 0 4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {m.title_th}
               </p>
               {m.vote_average !== null && (
-                <span style={{ color: CARD_TEXT[bg], fontSize: 11 }}>
+                <span style={{ color: COLORS.accent, fontSize: 10 }}>
                   ★ {Number(m.vote_average).toFixed(1)}
                 </span>
               )}
-            </Link>
-          );
-        })}
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   );
 }
 
 export default async function HomePage() {
-  const [featured, providers, latest] = await Promise.all([
+  const [featured, providers, latest, heroTrailerOverride] = await Promise.all([
     getFeaturedMovie(),
     getProviders(),
     getLatestReviews(),
+    getHeroTrailerOverride(),
   ]);
 
   const providerMovies = await Promise.all(
@@ -171,7 +180,7 @@ export default async function HomePage() {
           }}
         >
           <div style={{ maxWidth: 560 }}>
-            <p className={pixelFont.className} style={{ fontSize: 9, color: COLORS.gold, margin: "0 0 10px" }}>
+            <p className={pixelFont.className} style={{ fontSize: 9, color: COLORS.accent, margin: "0 0 10px" }}>
               กำลังมาแรง
             </p>
             <p className={pixelFont.className} style={{ fontSize: 22, color: "#fff", margin: "0 0 12px", lineHeight: 1.5 }}>
@@ -187,12 +196,11 @@ export default async function HomePage() {
               </p>
             )}
             <div style={{ display: "flex", gap: 10 }}>
-              {featured.trailer_youtube_key && (
-                
-                  <a href={"https://www.youtube.com/watch?v=" + featured.trailer_youtube_key}
+              {(heroTrailerOverride || featured.trailer_youtube_key) && (
+                  <a href={"https://www.youtube.com/watch?v=" + (heroTrailerOverride || featured.trailer_youtube_key)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ background: COLORS.gold, color: "#3d2b04", fontSize: 13, fontWeight: 600, padding: "10px 20px", borderRadius: 6, textDecoration: "none" }}
+                  style={{ background: COLORS.accent, color: "#3d2b04", fontSize: 13, fontWeight: 600, padding: "10px 20px", borderRadius: 6, textDecoration: "none" }}
                 >
                   ▶ ดูเทรลเลอร์
                 </a>
@@ -247,11 +255,11 @@ export default async function HomePage() {
           </p>
           <p style={{ fontSize: 14, color: COLORS.muted, lineHeight: 1.8 }}>
             ดูหนังตามแพลตฟอร์มที่ใช้อยู่ได้ที{"่"}
-            <Link href="/platforms" style={{ color: COLORS.gold, textDecoration: "underline" }}>
+            <Link href="/platforms" style={{ color: COLORS.accent, textDecoration: "underline" }}>
               หน้ารวมแพลตฟอร์ม
             </Link>
             {" "}หรือไล่ดูรีวิวหนังทั้งหมดได้ที่{" "}
-            <Link href="/movies" style={{ color: COLORS.gold, textDecoration: "underline" }}>
+            <Link href="/movies" style={{ color: COLORS.accent, textDecoration: "underline" }}>
               หน้ารีวิวหนัง
             </Link>
           </p>

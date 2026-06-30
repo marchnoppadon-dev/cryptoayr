@@ -6,19 +6,13 @@ import { supabase } from "../../lib/supabase";
 const pixelFont = Press_Start_2P({ subsets: ["latin"], weight: "400" });
 
 const COLORS = {
-  bg: "#1c1320",
-  surf: "#2a2030",
-  gold: "#ffd24a",
+  bg: "#13090f",
+  surf: "#1f1419",
+  card: "#1f1419",
+  cardBorder: "#3d2a35",
+  accent: "#ff7a5c",
   text: "#f5f0e8",
   muted: "#b8a8b8",
-};
-const CARD_COLORS = ["#e0608f", "#e0a83c", "#8b7fd1", "#2bb89c", "#3a8bd8"];
-const CARD_TEXT: Record<string, string> = {
-  "#e0608f": "#3d1428",
-  "#e0a83c": "#412a06",
-  "#8b7fd1": "#241f57",
-  "#2bb89c": "#0a3b30",
-  "#3a8bd8": "#0c2c4d",
 };
 
 function getMonthRange() {
@@ -75,7 +69,7 @@ export default async function RankingPage() {
       </div>
 
       <div style={{ padding: "2rem 1.5rem" }}>
-        <p className={pixelFont.className} style={{ fontSize: 9, color: COLORS.gold, margin: "0 0 10px" }}>
+        <p className={pixelFont.className} style={{ fontSize: 9, color: COLORS.accent, margin: "0 0 10px" }}>
           จัดอันดับ
         </p>
         <h1 className={pixelFont.className} style={{ fontSize: 20, color: "#fff", margin: "0 0 12px", lineHeight: 1.5 }}>
@@ -91,61 +85,59 @@ export default async function RankingPage() {
             ยังไม่มีหนังที่รีวิวแล้วในเดือนนี้ กลับมาเช็คใหม่เร็วๆนี้
           </p>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 12, maxWidth: 720 }}>
-            {movies.map((m, i) => {
-              const bg = CARD_COLORS[i % CARD_COLORS.length];
-              return (
-                <Link
-                  key={m.slug}
-                  href={"/movies/" + m.slug}
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, maxWidth: 720 }}>
+            {movies.map((m, i) => (
+              <Link
+                key={m.slug}
+                href={"/movies/" + m.slug}
+                style={{
+                  background: COLORS.surf,
+                  border: "1px solid " + COLORS.cardBorder,
+                  borderRadius: 8,
+                  padding: 14,
+                  textDecoration: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 14,
+                }}
+              >
+                <span
+                  className={pixelFont.className}
+                  style={{ fontSize: 18, color: COLORS.accent, width: 32, flexShrink: 0 }}
+                >
+                  {i + 1}
+                </span>
+                <div
                   style={{
-                    background: bg,
-                    borderRadius: 10,
-                    padding: 14,
-                    textDecoration: "none",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 14,
+                    width: 56,
+                    height: 80,
+                    background: COLORS.bg,
+                    borderRadius: 5,
+                    flexShrink: 0,
+                    overflow: "hidden",
                   }}
                 >
-                  <span
-                    className={pixelFont.className}
-                    style={{ fontSize: 18, color: CARD_TEXT[bg], width: 32, flexShrink: 0 }}
-                  >
-                    {i + 1}
-                  </span>
-                  <div
-                    style={{
-                      width: 56,
-                      height: 80,
-                      background: "rgba(0,0,0,0.15)",
-                      borderRadius: 5,
-                      flexShrink: 0,
-                      overflow: "hidden",
-                    }}
-                  >
-                    {m.poster_path && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={"https://image.tmdb.org/t/p/w200" + m.poster_path}
-                        alt={m.title_th}
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                      />
-                    )}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 15, fontWeight: 600, color: CARD_TEXT[bg], margin: "0 0 4px" }}>
-                      {m.title_th}
-                    </p>
-                    {m.vote_average !== null && (
-                      <span style={{ color: CARD_TEXT[bg], fontSize: 13 }}>
-                        ★ {Number(m.vote_average).toFixed(1)}
-                      </span>
-                    )}
-                  </div>
-                </Link>
-              );
-            })}
+                  {m.poster_path && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={"https://image.tmdb.org/t/p/w200" + m.poster_path}
+                      alt={m.title_th}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  )}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 15, fontWeight: 600, color: COLORS.text, margin: "0 0 4px" }}>
+                    {m.title_th}
+                  </p>
+                  {m.vote_average !== null && (
+                    <span style={{ color: COLORS.accent, fontSize: 13 }}>
+                      ★ {Number(m.vote_average).toFixed(1)}
+                    </span>
+                  )}
+                </div>
+              </Link>
+            ))}
           </div>
         )}
       </div>

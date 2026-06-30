@@ -6,17 +6,13 @@ import { supabase } from "../../lib/supabase";
 const pixelFont = Press_Start_2P({ subsets: ["latin"], weight: "400" });
 
 const COLORS = {
-  bg: "#1c1320",
+  bg: "#13090f",
+  surf: "#1f1419",
+  card: "#1f1419",
+  cardBorder: "#3d2a35",
+  accent: "#ff7a5c",
   text: "#f5f0e8",
   muted: "#b8a8b8",
-};
-const CARD_COLORS = ["#e0608f", "#e0a83c", "#8b7fd1", "#2bb89c", "#3a8bd8"];
-const CARD_TEXT: Record<string, string> = {
-  "#e0608f": "#3d1428",
-  "#e0a83c": "#412a06",
-  "#8b7fd1": "#241f57",
-  "#2bb89c": "#0a3b30",
-  "#3a8bd8": "#0c2c4d",
 };
 
 async function getProviders() {
@@ -48,7 +44,7 @@ export default async function PlatformsListPage() {
       </div>
 
       <div style={{ padding: "2rem 1.5rem" }}>
-        <p className={pixelFont.className} style={{ fontSize: 9, color: "#ffd24a", margin: "0 0 10px" }}>
+        <p className={pixelFont.className} style={{ fontSize: 9, color: COLORS.accent, margin: "0 0 10px" }}>
           เลือกแพลตฟอร์ม
         </p>
         <h1 className={pixelFont.className} style={{ fontSize: 20, color: "#fff", margin: "0 0 12px", lineHeight: 1.5 }}>
@@ -63,35 +59,33 @@ export default async function PlatformsListPage() {
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
-            gap: 14,
+            gap: 12,
           }}
         >
-          {providers.map((p, i) => {
-            const bg = CARD_COLORS[p.id % CARD_COLORS.length];
-            return (
-              <Link
-                key={p.slug}
-                href={"/platforms/" + p.slug}
-                style={{
-                  background: bg,
-                  borderRadius: 10,
-                  padding: 20,
-                  textDecoration: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  minHeight: 80,
-                }}
+          {providers.map((p) => (
+            <Link
+              key={p.slug}
+              href={"/platforms/" + p.slug}
+              style={{
+                background: COLORS.surf,
+                border: "1px solid " + COLORS.cardBorder,
+                borderRadius: 8,
+                padding: 20,
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                minHeight: 80,
+              }}
+            >
+              <span
+                className={pixelFont.className}
+                style={{ fontSize: 14, color: COLORS.text, textAlign: "center" }}
               >
-                <span
-                  className={pixelFont.className}
-                  style={{ fontSize: 14, color: CARD_TEXT[bg], textAlign: "center" }}
-                >
-                  {p.name.toUpperCase()}
-                </span>
-              </Link>
-            );
-          })}
+                {p.name.toUpperCase()}
+              </span>
+            </Link>
+          ))}
         </div>
       </div>
     </div>

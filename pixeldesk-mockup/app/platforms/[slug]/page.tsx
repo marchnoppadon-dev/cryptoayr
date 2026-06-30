@@ -7,19 +7,13 @@ import { supabase } from "../../../lib/supabase";
 const pixelFont = Press_Start_2P({ subsets: ["latin"], weight: "400" });
 
 const COLORS = {
-  bg: "#1c1320",
-  surf: "#2a2030",
-  gold: "#ffd24a",
+  bg: "#13090f",
+  surf: "#1f1419",
+  card: "#1f1419",
+  cardBorder: "#3d2a35",
+  accent: "#ff7a5c",
   text: "#f5f0e8",
   muted: "#b8a8b8",
-};
-const CARD_COLORS = ["#e0608f", "#e0a83c", "#8b7fd1", "#2bb89c", "#3a8bd8"];
-const CARD_TEXT: Record<string, string> = {
-  "#e0608f": "#3d1428",
-  "#e0a83c": "#412a06",
-  "#8b7fd1": "#241f57",
-  "#2bb89c": "#0a3b30",
-  "#3a8bd8": "#0c2c4d",
 };
 
 interface Provider {
@@ -67,9 +61,9 @@ export async function generateMetadata({
   if (!provider) return {};
 
   return {
-    title: "หนังบน " + provider.name.toUpperCase() + " ที่น่าดู",
+    title: "แนะนำหนัง " + provider.name.toUpperCase() + " ดูอะไรดี",
     description:
-      "รวมหนังที่ดูได้บน " + provider.name.toUpperCase() + " พร้อมรีวิวภาษาไทย อัปเดตล่าสุด",
+      "แนะนำหนัง " + provider.name.toUpperCase() + " ดูอะไรดี รวมหนังใหม่บน " + provider.name.toUpperCase() + " พร้อมรีวิวภาษาไทย อัปเดตล่าสุด",
   };
 }
 
@@ -83,8 +77,6 @@ export default async function PlatformPage({
   if (!provider) notFound();
 
   const movies = await getMoviesForProvider(provider.id);
-  const heroColor = CARD_COLORS[provider.id % CARD_COLORS.length];
-  const heroText = CARD_TEXT[heroColor];
 
   return (
     <div style={{ background: COLORS.bg, color: COLORS.text, minHeight: "100vh" }}>
@@ -105,24 +97,26 @@ export default async function PlatformPage({
 
       <div
         style={{
-          background: heroColor,
+          background: "linear-gradient(160deg, " + COLORS.surf + " 0%, " + COLORS.bg + " 75%)",
           padding: "2.5rem 1.5rem",
           marginBottom: "1.5rem",
+          textAlign: "center",
+          borderBottom: "1px solid " + COLORS.cardBorder,
         }}
       >
-        <p className={pixelFont.className} style={{ fontSize: 10, color: heroText, margin: "0 0 10px", opacity: 0.8 }}>
+        <p className={pixelFont.className} style={{ fontSize: 10, color: COLORS.accent, margin: "0 0 10px", letterSpacing: 2 }}>
           แพลตฟอร์มสตรีมมิ่ง
         </p>
-        <p className={pixelFont.className} style={{ fontSize: 24, color: heroText, margin: "0 0 8px", lineHeight: 1.5 }}>
+        <p className={pixelFont.className} style={{ fontSize: 22, color: "#fff", margin: "0 0 10px", lineHeight: 1.5 }}>
           {provider.name.toUpperCase()}
         </p>
-        <p style={{ fontSize: 14, color: heroText, margin: "0 0 6px", opacity: 0.85 }}>
+        <p style={{ fontSize: 14, color: COLORS.muted, margin: "0 0 6px", maxWidth: 480, marginLeft: "auto", marginRight: "auto" }}>
           {movies.length > 0
             ? "รวมหนัง " + movies.length + " เรื่องที่ดูได้บน " + provider.name.toUpperCase()
             : "เร็วๆนี้ — กำลังรวบรวมหนังบนแพลตฟอร์มนี้"}
         </p>
         {provider.description_th && (
-          <p style={{ fontSize: 14, color: heroText, margin: 0, opacity: 0.9, lineHeight: 1.7, maxWidth: 640 }}>
+          <p style={{ fontSize: 14, color: COLORS.muted, margin: 0, lineHeight: 1.7, maxWidth: 480, marginLeft: "auto", marginRight: "auto" }}>
             {provider.description_th}
           </p>
         )}
@@ -138,52 +132,55 @@ export default async function PlatformPage({
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
-              gap: 12,
+              gap: 10,
             }}
           >
-            {movies.map((m, i) => {
-              const bg = CARD_COLORS[i % CARD_COLORS.length];
-              return (
-                <Link
-                  key={m.slug}
-                  href={"/movies/" + m.slug}
+            {movies.map((m) => (
+              <Link
+                key={m.slug}
+                href={"/movies/" + m.slug}
+                style={{ textDecoration: "none" }}
+              >
+                <div
                   style={{
-                    background: bg,
-                    borderRadius: 10,
-                    padding: 10,
-                    textDecoration: "none",
+                    width: "100%",
+                    height: 160,
+                    background: COLORS.surf,
+                    border: "1px solid " + COLORS.cardBorder,
+                    borderBottom: "none",
+                    borderRadius: "6px 6px 0 0",
+                    overflow: "hidden",
                   }}
                 >
-                  <div
-                    style={{
-                      width: "100%",
-                      height: 160,
-                      background: "rgba(0,0,0,0.15)",
-                      borderRadius: 5,
-                      marginBottom: 8,
-                      overflow: "hidden",
-                    }}
-                  >
-                    {m.poster_path && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={"https://image.tmdb.org/t/p/w300" + m.poster_path}
-                        alt={m.title_th}
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                      />
-                    )}
-                  </div>
-                  <p className={pixelFont.className} style={{ fontSize: 9, color: CARD_TEXT[bg], margin: "0 0 6px", lineHeight: 1.5 }}>
+                  {m.poster_path && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={"https://image.tmdb.org/t/p/w300" + m.poster_path}
+                      alt={m.title_th}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  )}
+                </div>
+                <div
+                  style={{
+                    background: COLORS.card,
+                    border: "1px solid " + COLORS.cardBorder,
+                    borderTop: "none",
+                    borderRadius: "0 0 6px 6px",
+                    padding: 8,
+                  }}
+                >
+                  <p style={{ fontSize: 11, fontWeight: 600, color: COLORS.text, margin: "0 0 4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {m.title_th}
                   </p>
                   {m.vote_average !== null && (
-                    <span style={{ color: CARD_TEXT[bg], fontSize: 11 }}>
+                    <span style={{ color: COLORS.accent, fontSize: 10 }}>
                       ★ {Number(m.vote_average).toFixed(1)}
                     </span>
                   )}
-                </Link>
-              );
-            })}
+                </div>
+              </Link>
+            ))}
           </div>
         )}
       </div>

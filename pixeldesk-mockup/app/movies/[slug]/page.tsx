@@ -7,9 +7,11 @@ import { supabase } from "../../../lib/supabase";
 const pixelFont = Press_Start_2P({ subsets: ["latin"], weight: "400" });
 
 const COLORS = {
-  bg: "#1c1320",
-  surf: "#2a2030",
-  gold: "#ffd24a",
+  bg: "#13090f",
+  surf: "#1f1419",
+  card: "#1f1419",
+  cardBorder: "#3d2a35",
+  accent: "#ff7a5c",
   text: "#f5f0e8",
   muted: "#b8a8b8",
 };
@@ -158,7 +160,8 @@ export default async function MovieDetailPage({
 
       <div
         style={{
-          background: "#2bb89c",
+          background: COLORS.surf,
+          border: "1px solid " + COLORS.cardBorder,
           borderRadius: 10,
           padding: 18,
           display: "flex",
@@ -188,16 +191,16 @@ export default async function MovieDetailPage({
           )}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <h1 className={pixelFont.className} style={{ fontSize: 15, color: "#06251c", margin: "0 0 8px", lineHeight: 1.5 }}>
+          <h1 className={pixelFont.className} style={{ fontSize: 18, color: "#fff", margin: "0 0 8px", lineHeight: 1.5 }}>
             {movie.title_th}
           </h1>
-          <p style={{ fontSize: 12, color: "#0a3b30", margin: "0 0 10px" }}>
+          <p style={{ fontSize: 12, color: COLORS.muted, margin: "0 0 10px" }}>
             {releaseYear ?? "-"} · {movie.runtime ? `${movie.runtime} นาที` : "-"} ·{" "}
             {movie.certification_th ?? "ไม่ระบุเรต"}
           </p>
           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
             {movie.vote_average !== null && (
-              <span style={{ color: "#0a3b30", fontSize: 13 }}>
+              <span style={{ color: COLORS.accent, fontSize: 13, fontWeight: 600 }}>
                 ★ {movie.vote_average.toFixed(1)}/10
               </span>
             )}
@@ -205,8 +208,9 @@ export default async function MovieDetailPage({
               <Link
                 href={`/platforms/${primaryProvider.slug}`}
                 style={{
-                  background: "rgba(0,0,0,0.15)",
-                  color: "#0a3b30",
+                  background: COLORS.bg,
+                  border: "1px solid " + COLORS.cardBorder,
+                  color: COLORS.text,
                   fontSize: 10,
                   padding: "3px 9px",
                   borderRadius: 4,
@@ -222,8 +226,8 @@ export default async function MovieDetailPage({
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  background: COLORS.gold,
-                  color: "#3d2b04",
+                  background: COLORS.accent,
+                  color: "#3d1006",
                   fontSize: 10,
                   padding: "4px 10px",
                   borderRadius: 4,
@@ -285,7 +289,7 @@ export default async function MovieDetailPage({
       {primaryProvider && (
         <div
           style={{
-            background: COLORS.gold,
+            background: COLORS.accent,
             borderRadius: 10,
             padding: 16,
             marginBottom: "1.25rem",
