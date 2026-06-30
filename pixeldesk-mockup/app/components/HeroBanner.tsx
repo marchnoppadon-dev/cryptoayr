@@ -50,13 +50,13 @@ export default function HeroBanner({ trending, popular, latest, heroTrailerOverr
       <div
         style={{
           position: "relative",
-          minHeight: 380,
+          minHeight: 560,
           backgroundImage: featured.backdrop_path
             ? "linear-gradient(to top, rgba(28,19,32,1) 0%, rgba(28,19,32,0.3) 50%, rgba(28,19,32,0.1) 100%), url(https://image.tmdb.org/t/p/w1280" + featured.backdrop_path + ")"
             : undefined,
           backgroundColor: colors.surf,
           backgroundSize: "cover",
-          backgroundPosition: "center",
+          backgroundPosition: "center 25%",
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -100,20 +100,6 @@ export default function HeroBanner({ trending, popular, latest, heroTrailerOverr
           </div>
         </div>
       </div>
-
-      {(heroTrailerOverride || featured.trailer_youtube_key) && (
-        <div id="trailer-embed" style={{ padding: "1.5rem 1.5rem 0" }}>
-          <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, borderRadius: 8, overflow: "hidden", background: colors.surf }}>
-            <iframe
-              src={"https://www.youtube.com/embed/" + (heroTrailerOverride || featured.trailer_youtube_key)}
-              title="trailer"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

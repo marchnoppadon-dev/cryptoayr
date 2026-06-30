@@ -3,6 +3,7 @@ import Link from "next/link";
 import { supabase } from "../lib/supabase";
 import Image from "next/image";
 import HeroBanner from "./components/HeroBanner";
+import TrailerSection from "./components/TrailerSection";
 
 const pixelFont = Press_Start_2P({ subsets: ["latin"], weight: "400" });
 
@@ -198,6 +199,16 @@ export default async function HomePage() {
         colors={COLORS}
         pixelFontClassName={pixelFont.className}
       />
+
+      {heroTrailerOverride && (
+        <TrailerSection
+          videoId={heroTrailerOverride}
+          title={featured?.title_th || "ตัวอย่างหนังแนะนำ"}
+          description={featured?.ai_content?.meta_description}
+          backdropPath={featured?.backdrop_path}
+          colors={COLORS}
+        />
+      )}
 
       <div style={{ padding: "2rem 1.5rem" }}>
         <div style={{ marginBottom: "2rem", maxWidth: 720 }}>
