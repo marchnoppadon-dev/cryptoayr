@@ -39,6 +39,11 @@ async function getProvider(slug: string): Promise<Provider | null> {
   return data ?? null;
 }
 
+async function getAllProviders(): Promise<{ name: string; slug: string }[]> {
+  const { data } = await supabase.from("providers").select("name, slug").order("name");
+  return data ?? [];
+}
+
 async function getMoviesForProvider(providerId: number): Promise<ProviderMovie[]> {
   const { data } = await supabase
     .from("movie_providers")
@@ -77,6 +82,8 @@ export default async function PlatformPage({
   if (!provider) notFound();
 
   const movies = await getMoviesForProvider(provider.id);
+  const allProviders = await getAllProviders();
+  const otherProviders = allProviders.filter((p) => p.slug !== provider.slug);
 
   return (
     <div style={{ background: COLORS.bg, color: COLORS.text, minHeight: "100vh" }}>
@@ -95,6 +102,17 @@ export default async function PlatformPage({
         </nav>
       </div>
 
+      <nav style={{ fontSize: 12, color: COLORS.muted, padding: "0 1.5rem", marginBottom: "0.5rem" }}>
+        <Link href="/" style={{ color: COLORS.muted }}>
+          หน้าแรก
+        </Link>{" "}
+        /{" "}
+        <Link href="/platforms" style={{ color: COLORS.muted }}>
+          แพลตฟอร์ม
+        </Link>{" "}
+        / {provider.name.toUpperCase()}
+      </nav>
+
       <div
         style={{
           background: "linear-gradient(160deg, " + COLORS.surf + " 0%, " + COLORS.bg + " 75%)",
@@ -107,9 +125,9 @@ export default async function PlatformPage({
         <p className={pixelFont.className} style={{ fontSize: 10, color: COLORS.accent, margin: "0 0 10px", letterSpacing: 2 }}>
           แพลตฟอร์มสตรีมมิ่ง
         </p>
-        <p className={pixelFont.className} style={{ fontSize: 22, color: "#fff", margin: "0 0 10px", lineHeight: 1.5 }}>
+        <h1 className={pixelFont.className} style={{ fontSize: 22, color: "#fff", margin: "0 0 10px", lineHeight: 1.5 }}>
           {provider.name.toUpperCase()}
-        </p>
+        </h1>
         <p style={{ fontSize: 14, color: COLORS.muted, margin: "0 0 6px", maxWidth: 480, marginLeft: "auto", marginRight: "auto" }}>
           {movies.length > 0
             ? "รวมหนัง " + movies.length + " เรื่องที่ดูได้บน " + provider.name.toUpperCase()
@@ -181,6 +199,33 @@ export default async function PlatformPage({
                 </div>
               </Link>
             ))}
+          </div>
+        )}
+
+        {otherProviders.length > 0 && (
+          <div style={{ marginTop: "2.5rem", paddingTop: "1.5rem", borderTop: "1px solid " + COLORS.cardBorder }}>
+            <p className={pixelFont.className} style={{ fontSize: 11, color: COLORS.text, margin: "0 0 12px" }}>
+              ดูแพลตฟอร์มอื่น
+            </p>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {otherProviders.map((p) => (
+                <Link
+                  key={p.slug}
+                  href={"/platforms/" + p.slug}
+                  style={{
+                    background: COLORS.surf,
+                    border: "1px solid " + COLORS.cardBorder,
+                    color: COLORS.text,
+                    fontSize: 12,
+                    padding: "6px 14px",
+                    borderRadius: 20,
+                    textDecoration: "none",
+                  }}
+                >
+                  {p.name.toUpperCase()}
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </div>
