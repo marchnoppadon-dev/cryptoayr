@@ -9,7 +9,7 @@ const thai = IBM_Plex_Sans_Thai({
   weight: ["400", "500", "700"],
 });
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 const COLORS = {
   bg: "#0b0b0d",
