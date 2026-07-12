@@ -32,8 +32,9 @@ async function getIndicator(slug: string) {
   return result;
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const debugResult = await getIndicator(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const debugResult = await getIndicator(slug);
   const item = debugResult.data;
   if (!item) return {};
   return {
@@ -42,15 +43,16 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function IndicatorDetailPage({ params }: { params: { slug: string } }) {
-  const debugResult = await getIndicator(params.slug);
+export default async function IndicatorDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const debugResult = await getIndicator(slug);
   const item = debugResult.data;
 
   if (!item) {
     return (
       <div style={{ background: "#0b0b0d", color: "#fff", padding: 40, fontFamily: "monospace" }}>
         <h1>DEBUG: ไม่พบข้อมูล</h1>
-        <p>slug ที่ค้นหา: {params.slug}</p>
+        <p>slug ที่ค้นหา: {slug}</p>
         <p>error: {JSON.stringify(debugResult.error)}</p>
       </div>
     );
