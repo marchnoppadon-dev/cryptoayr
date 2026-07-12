@@ -25,7 +25,7 @@ async function getIndicator(slug: string) {
     .from("articles")
     .select("*")
     .eq("vertical", "crypto")
-    .eq("pillar", "indicator")
+    .eq("pillar", "indicators")
     .eq("slug", slug)
     .maybeSingle();
   return data;

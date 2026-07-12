@@ -51,7 +51,7 @@ export async function generateIndicatorContent(name: string): Promise<IndicatorC
     },
     body: JSON.stringify({
       model: "claude-sonnet-4-6",
-      max_tokens: 4000,
+      max_tokens: 8000,
       messages: [{ role: "user", content: prompt }],
     }),
   });
@@ -66,6 +66,7 @@ export async function generateIndicatorContent(name: string): Promise<IndicatorC
     .filter((block: any) => block.type === "text")
     .map((block: any) => block.text)
     .join("");
+
 
   const metaMatch = fullText.match(/===META===([\s\S]*?)===REVIEW===/);
   const reviewMatch = fullText.match(/===REVIEW===([\s\S]*?)===END===/);

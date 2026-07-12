@@ -24,7 +24,7 @@ async function getAllIndicators() {
     .from("articles")
     .select("slug, title, meta_description")
     .eq("vertical", "crypto")
-    .eq("pillar", "indicator")
+    .eq("pillar", "indicators")
     .in("status", ["ai_generated", "published"])
     .order("title", { ascending: true });
   return data ?? [];

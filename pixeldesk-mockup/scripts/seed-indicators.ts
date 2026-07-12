@@ -37,7 +37,7 @@ async function seedOne(item: IndicatorSeed) {
 
   const { error } = await supabase.from("articles").insert({
     vertical: "crypto",
-    pillar: "indicator",
+    pillar: "indicators",
     slug: item.slug,
     title: item.name,
     meta_title: content.meta.metaTitle,
