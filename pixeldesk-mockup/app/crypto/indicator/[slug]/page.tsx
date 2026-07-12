@@ -21,14 +21,15 @@ const COLORS = {
 };
 
 async function getIndicator(slug: string) {
-  const { data } = await supabase
+  const result = await supabase
     .from("articles")
     .select("*")
     .eq("vertical", "crypto")
     .eq("pillar", "indicators")
     .eq("slug", slug)
     .maybeSingle();
-  return data;
+  console.log("DEBUG slug=" + slug + " error=" + JSON.stringify(result.error) + " hasData=" + !!result.data);
+  return result;
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
@@ -41,8 +42,18 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function IndicatorDetailPage({ params }: { params: { slug: string } }) {
-  const item = await getIndicator(params.slug);
-  if (!item) notFound();
+  const debugResult = await getIndicator(params.slug);
+  const item = debugResult.data;
+
+  if (!item) {
+    return (
+      <div style={{ background: "#0b0b0d", color: "#fff", padding: 40, fontFamily: "monospace" }}>
+        <h1>DEBUG: ไม่พบข้อมูล</h1>
+        <p>slug ที่ค้นหา: {params.slug}</p>
+        <p>error: {JSON.stringify(debugResult.error)}</p>
+      </div>
+    );
+  }
 
   let pros: string[] = [];
   let cons: string[] = [];
