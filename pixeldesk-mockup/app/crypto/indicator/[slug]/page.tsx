@@ -33,7 +33,8 @@ async function getIndicator(slug: string) {
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const item = await getIndicator(params.slug);
+  const debugResult = await getIndicator(params.slug);
+  const item = debugResult.data;
   if (!item) return {};
   return {
     title: item.meta_title,
