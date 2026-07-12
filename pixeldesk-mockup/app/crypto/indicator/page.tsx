@@ -19,6 +19,15 @@ const COLORS = {
   muted: "#8f8f95",
 };
 
+async function getIndicatorHub() {
+  const { data } = await supabase
+    .from("hub_content")
+    .select("title, body_th")
+    .eq("key", "indicator-hub")
+    .maybeSingle();
+  return data;
+}
+
 async function getAllIndicators() {
   const { data } = await supabase
     .from("articles")
@@ -37,6 +46,7 @@ export const metadata = {
 
 export default async function IndicatorListPage() {
   const indicators = await getAllIndicators();
+  const hub = await getIndicatorHub();
 
   return (
     <div style={{ background: COLORS.bg, color: COLORS.text, minHeight: "100vh" }} className={thai.className}>
@@ -130,6 +140,19 @@ export default async function IndicatorListPage() {
           </div>
         ) : (
           <p style={{ color: COLORS.muted }}>ยังไม่มี indicator ในระบบ</p>
+        )}
+
+        {hub && (
+          <div style={{ marginTop: 48, paddingTop: 32, borderTop: "1px solid " + COLORS.border }}>
+            <h2 className={display.className} style={{ fontSize: 20, margin: "0 0 16px" }}>
+              {hub.title}
+            </h2>
+            {hub.body_th.split("\n\n").map((para: string, i: number) => (
+              <p key={i} style={{ fontSize: 14, lineHeight: 1.8, color: COLORS.muted, margin: "0 0 1rem" }}>
+                {para}
+              </p>
+            ))}
+          </div>
         )}
       </div>
     </div>
