@@ -1,266 +1,457 @@
-import { Press_Start_2P } from "next/font/google";
 import Link from "next/link";
+import { Anton, IBM_Plex_Sans_Thai } from "next/font/google";
 import { supabase } from "../lib/supabase";
-import Image from "next/image";
-import HeroBanner from "./components/HeroBanner";
-import TrailerSection from "./components/TrailerSection";
+import { fetchBitcoinPrice } from "../lib/coingecko";
 
-export const revalidate = 0;
+const display = Anton({ subsets: ["latin"], weight: "400" });
+const thai = IBM_Plex_Sans_Thai({
+  subsets: ["thai", "latin"],
+  weight: ["400", "500", "700"],
+});
 
-const pixelFont = Press_Start_2P({ subsets: ["latin"], weight: "400" });
+export const revalidate = 60;
 
 const COLORS = {
-  bg: "#13090f",
-  surf: "#1f1419",
-  card: "#1f1419",
-  cardBorder: "#3d2a35",
-  accent: "#ff7a5c",
-  text: "#f5f0e8",
-  muted: "#b8a8b8",
+  bg: "#0b0b0d",
+  surf: "#161618",
+  border: "#2a2a2e",
+  accent: "#e6283f",
+  text: "#f2f0eb",
+  muted: "#8f8f95",
+  up: "#22c55e",
 };
 
-async function getFeaturedMovie() {
-  const { data } = await supabase
-    .from("movies")
-    .select(
-      "slug, title_th, backdrop_path, vote_average, trailer_youtube_key, " +
-        "ai_content(meta_description), movie_genres(genres(name_th))"
-    )
-    .eq("status", "published")
-    .order("popularity", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  return data as any;
+const COINS = ["BTC", "ETH", "SOL", "XRP", "BNB", "DOGE", "ADA", "AVAX", "LINK", "TON"];
+
+const FEATURES = [
+  {
+    title: "เร็วทันตลาด",
+    desc: "อัปเดตข่าวคริปโตทุกวัน ไม่พลาดความเคลื่อนไหวสำคัญ",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="#e6283f" strokeWidth="1.6" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    title: "อ้างอิงได้จริง",
+    desc: "ทุกข่าวมีลิงก์กลับต้นฉบับ ตรวจสอบแหล่งที่มาได้เสมอ",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1.5 1.5" stroke="#e6283f" strokeWidth="1.6" strokeLinecap="round" />
+        <path d="M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1.5-1.5" stroke="#e6283f" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    title: "ไม่ชี้นำการลงทุน",
+    desc: "นำเสนอเชิงข้อมูล ไม่ใช่คำแนะนำซื้อ-ขาย",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M12 3v18M5 8l-3 6a4 4 0 008 0l-3-6M19 8l-3 6a4 4 0 008 0l-3-6M5 8h14M12 3l7 5H5l7-5z" stroke="#e6283f" strokeWidth="1.4" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    title: "อ่านง่ายเข้าใจไว",
+    desc: "สรุปเป็นภาษาไทยธรรมชาติ ไม่ต้องแปลเอง",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M4 5h9a3 3 0 013 3v11a2 2 0 00-2-2H4V5zM20 5h-9a3 3 0 00-3 3" stroke="#e6283f" strokeWidth="1.6" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+];
+
+async function getBitcoin() {
+  try {
+    return await fetchBitcoinPrice();
+  } catch {
+    return null;
+  }
 }
 
-async function getPopularMovie() {
+async function getLatestNews() {
   const { data } = await supabase
-    .from("movies")
-    .select(
-      "slug, title_th, backdrop_path, vote_average, trailer_youtube_key, " +
-        "ai_content(meta_description), movie_genres(genres(name_th))"
-    )
-    .eq("status", "published")
-    .order("vote_average", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  return data as any;
-}
-
-async function getLatestMovie() {
-  const { data } = await supabase
-    .from("movies")
-    .select(
-      "slug, title_th, backdrop_path, vote_average, trailer_youtube_key, " +
-        "ai_content(meta_description), movie_genres(genres(name_th))"
-    )
+    .from("articles")
+    .select("slug, title, meta_description, source_name, created_at")
+    .eq("vertical", "crypto")
+    .eq("pillar", "news")
     .eq("status", "published")
     .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  return data as any;
-}
-
-async function getProviders() {
-  const { data } = await supabase.from("providers").select("id, name, slug").order("name");
+    .limit(6);
   return data ?? [];
 }
 
-async function getHeroTrailerOverride() {
-  const { data } = await supabase
-    .from("site_settings")
-    .select("hero_trailer_url")
-    .eq("id", 1)
-    .maybeSingle();
-  return data?.hero_trailer_url ?? null;
-}
-
-async function getMoviesForProvider(providerId: number) {
-  const { data } = await supabase
-    .from("movie_providers")
-    .select("movies(slug, title_th, poster_path, vote_average, status)")
-    .eq("provider_id", providerId)
-    .eq("is_active", true)
-    .limit(10);
-  return (data ?? [])
-    .map((row: any) => row.movies)
-    .filter((m: any) => m && m.status === "published");
-}
-
-async function getLatestReviews() {
-  const { data } = await supabase
-    .from("movies")
-    .select("slug, title_th, poster_path, vote_average")
-    .eq("status", "published")
-    .order("created_at", { ascending: false })
-    .limit(10);
-  return data ?? [];
-}
-
-function MovieRow({ title, movies }: { title: string; movies: any[] }) {
-  if (movies.length === 0) return null;
+function NewsThumb({ title }: { title: string }) {
   return (
-    <div style={{ marginBottom: "2rem" }}>
-      <p className={pixelFont.className} style={{ fontSize: 11, color: COLORS.text, margin: "0 0 12px" }}>
-        {title}
-      </p>
-      <div
-        style={{
-          display: "flex",
-          gap: 8,
-          overflowX: "auto",
-          paddingBottom: 8,
-        }}
-      >
-        {movies.map((m) => (
-          <Link
-            key={m.slug}
-            href={"/movies/" + m.slug}
-            style={{
-              textDecoration: "none",
-              flex: "0 0 112px",
-            }}
-          >
-            <div
-              style={{
-                width: "100%",
-                height: 152,
-                background: COLORS.surf,
-                borderRadius: "6px 6px 0 0",
-                border: "1px solid " + COLORS.cardBorder,
-                borderBottom: "none",
-                overflow: "hidden",
-              }}
-            >
-              {m.poster_path && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={"https://image.tmdb.org/t/p/w200" + m.poster_path}
-                  alt={m.title_th}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-              )}
-            </div>
-            <div
-              style={{
-                background: COLORS.card,
-                border: "1px solid " + COLORS.cardBorder,
-                borderTop: "none",
-                borderRadius: "0 0 6px 6px",
-                padding: 8,
-              }}
-            >
-              <p style={{ fontSize: 11, fontWeight: 600, color: COLORS.text, margin: "0 0 4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                {m.title_th}
-              </p>
-              {m.vote_average !== null && (
-                <span style={{ color: COLORS.accent, fontSize: 10 }}>
-                  ★ {Number(m.vote_average).toFixed(1)}
-                </span>
-              )}
-            </div>
-          </Link>
-        ))}
-      </div>
+    <div
+      style={{
+        width: "100%",
+        height: 140,
+        background: "linear-gradient(135deg, #2a1015, #161618)",
+        borderRadius: "10px 10px 0 0",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <span style={{ color: COLORS.accent, fontSize: 13, letterSpacing: 2 }}>CRYPTOAYR</span>
     </div>
   );
 }
 
 export default async function HomePage() {
-  const [featured, popular, latestMovie, providers, latest, heroTrailerOverride] = await Promise.all([
-    getFeaturedMovie(),
-    getPopularMovie(),
-    getLatestMovie(),
-    getProviders(),
-    getLatestReviews(),
-    getHeroTrailerOverride(),
+  const [btc, news, homepageArticle] = await Promise.all([
+    getBitcoin(),
+    getLatestNews(),
+    supabase
+      .from("hub_content")
+      .select("title, body_th")
+      .eq("key", "homepage-seo-article")
+      .maybeSingle()
+      .then((res) => res.data),
   ]);
-
-  const providerMovies = await Promise.all(
-    providers.map((p) => getMoviesForProvider(p.id))
-  );
-
+  const featured = news.slice(0, 3);
+  const rest = news.slice(3, 6);
+  const tickerRow = [...COINS, ...COINS];
 
   return (
-    <div style={{ background: COLORS.bg, color: COLORS.text }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1.25rem 1.5rem" }}>
-        <Image src="/logo.png" alt="PIXELDESK" width={160} height={40} priority style={{ height: 36, width: "auto" }} />
-        <nav style={{ display: "flex", gap: 18, fontSize: 13, alignItems: "center", flexWrap: "wrap" }}>
-          <Link href="/" style={{ color: COLORS.text, textDecoration: "none" }}>หน้าแรก</Link>
-          <Link href="/platforms" style={{ color: COLORS.text, textDecoration: "none" }}>แพลตฟอร์ม</Link>
-          <Link href="/movies" style={{ color: COLORS.text, textDecoration: "none" }}>รีวิวหนัง</Link>
-          <Link href="/ranking" style={{ color: COLORS.text, textDecoration: "none" }}>จัดอันดับ</Link>
-        </nav>
-      </div>
+    <div style={{ background: COLORS.bg, color: COLORS.text }} className={thai.className}>
+      <style>{`
+        .site-nav {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1.25rem 2rem;
+          border-bottom: 1px solid ${COLORS.border};
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+        .nav-links {
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+  color: ${COLORS.muted};
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.nav-links::-webkit-scrollbar {
+  display: none;
+}
+        .nav-links a, .nav-links span {
+          white-space: nowrap;
+        }
+        @media (max-width: 720px) {
+          .site-nav {
+            padding: 1rem 1.25rem;
+          }
+        }
+        .ticker-track {
+          display: flex;
+          gap: 48px;
+          width: max-content;
+          animation: ticker-scroll 28s linear infinite;
+        }
+        @keyframes ticker-scroll {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .ticker-track { animation: none; }
+        }
+        .feature-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 16px;
+        }
+        @media (max-width: 900px) {
+          .feature-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 520px) {
+          .feature-grid { grid-template-columns: 1fr; }
+        }
+      `}</style>
 
-      <HeroBanner
-        trending={featured}
-        popular={popular}
-        latest={latestMovie}
-        heroTrailerOverride={heroTrailerOverride}
-        colors={COLORS}
-        pixelFontClassName={pixelFont.className}
-      />
+      <nav className="site-nav">
+        <span className={display.className} style={{ fontSize: 22, letterSpacing: 1 }}>
+          CRYPTO<span style={{ color: COLORS.accent }}>AYR</span>
+        </span>
+        <div className="nav-links">
+          <Link href="/crypto/news" style={{ color: COLORS.text }}>ข่าว</Link>
+          <span>Indicator</span>
+          <span>วิธีเทรด</span>
+          <span>บอทเทรด</span>
+        </div>
+        <span
+          style={{
+            border: "1px solid " + COLORS.accent,
+            color: COLORS.accent,
+            fontSize: 13,
+            padding: "8px 16px",
+            borderRadius: 4,
+            whiteSpace: "nowrap",
+          }}
+        >
+          Forex →
+        </span>
+      </nav>
 
-      {heroTrailerOverride && (
-        <TrailerSection
-          videoId={heroTrailerOverride}
-          title={featured?.title_th || "ตัวอย่างหนังแนะนำ"}
-          description={featured?.ai_content?.meta_description}
-          backdropPath={featured?.backdrop_path}
-          colors={COLORS}
+      <section
+        style={{
+          position: "relative",
+          minHeight: "70vh",
+          display: "flex",
+          alignItems: "center",
+          overflow: "hidden",
+          borderBottom: "1px solid " + COLORS.border,
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/cryptoayr-hero-banner.webp"
+          alt="CRYPTOAYR ข่าวคริปโตภาษาไทย รูปปั้นหินอ่อนโรมันผสานเทคโนโลยี สื่อถึงภูมิปัญญาโบราณที่เชื่อมกับตลาดคริปโตยุคใหม่"
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "center",
+          }}
         />
-      )}
-
-      <div style={{ padding: "2rem 1.5rem" }}>
-        <div style={{ marginBottom: "2rem", maxWidth: 720 }}>
-          <h1 className={pixelFont.className} style={{ fontSize: 16, color: "#fff", margin: "0 0 12px", lineHeight: 1.6 }}>
-            แนะนำหนัง Netflix ดูอะไรดี พร้อมหนังใหม่จาก HBO Max, Apple TV และ Viu
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(90deg, rgba(11,11,13,0.95) 0%, rgba(11,11,13,0.75) 35%, rgba(11,11,13,0.15) 65%, rgba(11,11,13,0.05) 100%)",
+          }}
+        />
+        <div style={{ position: "relative", padding: "3rem 2rem", maxWidth: 720 }}>
+          <p style={{ color: COLORS.accent, fontSize: 13, letterSpacing: 2, margin: "0 0 12px" }}>
+            ข่าวคริปโตภาษาไทย
+          </p>
+          <h1
+            className={display.className}
+            style={{ fontSize: "clamp(40px, 6vw, 76px)", lineHeight: 1.05, margin: "0 0 14px" }}
+          >
+            ตลาด<span style={{ color: COLORS.accent }}>ขยับ</span><br />
+            คุณต้อง<span style={{ color: COLORS.accent }}>รู้ก่อน</span>
           </h1>
-          <p style={{ fontSize: 14, color: COLORS.muted, lineHeight: 1.7 }}>
-            pixeldeskth รวมรีวิวหนังภาษาไทยต้นฉบับ พร้อมเช็คว่าหนังเรื่องที่อยากดู
-            มีอยู่บนแพลตฟอร์มไหนบ้าง ไม่ต้องเสียเวลาเปิดหลายแอปหาเอง
-            อัปเดตหนังใหม่ทุกวันจากทุกแพลตฟอร์มสตรีมมิ่งหลักในไทย
+          <p
+            className={display.className}
+            style={{
+              fontSize: "clamp(12px, 1.4vw, 15px)",
+              color: COLORS.muted,
+              letterSpacing: 1,
+              margin: "0 0 24px",
+            }}
+          >
+            CARVED IN MARBLE. CODED FOR TOMORROW.
           </p>
-        </div>
-        <MovieRow title="รีวิวล่าสุด" movies={latest} />
-        {providers.map((p, i) => (
-          <MovieRow key={p.slug} title={"หนัง " + p.name.toUpperCase()} movies={providerMovies[i]} />
-        ))}
+          <p style={{ fontSize: 16, color: COLORS.muted, maxWidth: 440, lineHeight: 1.7, margin: "0 0 28px" }}>
+            สรุปข่าวคริปโตทุกวัน วิเคราะห์ตรงประเด็น อ่านง่าย ไม่ต้องงมหาเอง
+          </p>
 
-        <div style={{ marginTop: "3rem", maxWidth: 760 }}>
-          <h2 className={pixelFont.className} style={{ fontSize: 14, color: "#fff", margin: "0 0 14px", lineHeight: 1.6 }}>
-            แนะนำหนัง Netflix ดูอะไรดี เช็คได้ที่ pixeldeskth
-          </h2>
-          <p style={{ fontSize: 14, color: COLORS.muted, lineHeight: 1.8, margin: "0 0 14px" }}>
-            หลายคนเปิด Netflix แล้วเจอหนังให้เลือกเยอะจนตัดสินใจไม่ได้ pixeldeskth
-            แก้ปัญหานี้ด้วยการรวบรวมหนัง Netflix ที่น่าดูมาไว้ในที่เดียว
-            พร้อมรีวิวภาษาไทยที่เขียนขึ้นใหม่ทั้งหมด ไม่ใช่แปลตรงจากเรื่องย่อต้นฉบับ
-            เพื่อให้อ่านเข้าใจง่ายและได้มุมมองวิเคราะห์จริง ไม่ใช่แค่สรุปพล็อตเรื่อง
-          </p>
-          <p style={{ fontSize: 14, color: COLORS.muted, lineHeight: 1.8, margin: "0 0 14px" }}>
-            แต่ละรีวิวบนเว็บนี้บอกครบทั้งจุดเด่น จุดสังเกต คำถามที่พบบ่อยเกี่ยวกับหนังเรื่องนั้น
-            และที่สำคัญคือบอกชัดว่าหนังเรื่องไหนดูได้บนแพลตฟอร์มไหน ไม่ต้องเปิดสลับหลายแอป
-            เพื่อหาว่าหนังเรื่องที่อยากดูอยู่ที่ไหน
-          </p>
-          <p style={{ fontSize: 14, color: COLORS.muted, lineHeight: 1.8, margin: "0 0 14px" }}>
-            นอกจาก Netflix แล้ว pixeldeskth ยังครอบคลุมหนังจาก HBO Max ที่เด่นเรื่องหนังฟอร์มยักษ์
-            และซีรีส์ตำนานจากหลายค่าย Apple TV ที่มีงานคุณภาพสูงแม้จำนวนจะน้อยกว่า
-            และ Viu ที่อัปเดตซีรีส์เอเชียได้รวดเร็ว ทุกแพลตฟอร์มมีหน้ารวมหนังของตัวเอง
-            ที่อัปเดตทุกวันให้ตามหนังใหม่ที่เพิ่งลงสตรีมมิ่ง
-          </p>
-          <p style={{ fontSize: 14, color: COLORS.muted, lineHeight: 1.8 }}>
-            ดูหนังตามแพลตฟอร์มที่ใช้อยู่ได้ที{"่"}
-            <Link href="/platforms" style={{ color: COLORS.accent, textDecoration: "underline" }}>
-              หน้ารวมแพลตฟอร์ม
-            </Link>
-            {" "}หรือไล่ดูรีวิวหนังทั้งหมดได้ที่{" "}
-            <Link href="/movies" style={{ color: COLORS.accent, textDecoration: "underline" }}>
-              หน้ารีวิวหนัง
-            </Link>
-          </p>
+          <div
+            style={{
+              background: "rgba(22,22,24,0.85)",
+              backdropFilter: "blur(6px)",
+              border: "1px solid " + COLORS.border,
+              borderRadius: 12,
+              padding: "1.25rem 1.5rem",
+              display: "inline-block",
+            }}
+          >
+            <p style={{ fontSize: 12, color: COLORS.muted, margin: "0 0 6px" }}>BTC / USD</p>
+            {btc ? (
+              <>
+                <p className={display.className} style={{ fontSize: 32, margin: "0 0 4px" }}>
+                  ${btc.price.toLocaleString("en-US", { maximumFractionDigits: 0 })}
+                </p>
+                <p
+                  style={{
+                    fontSize: 13,
+                    color: btc.change24h >= 0 ? COLORS.up : COLORS.accent,
+                    margin: 0,
+                  }}
+                >
+                  {btc.change24h >= 0 ? "▲" : "▼"} {Math.abs(btc.change24h).toFixed(2)}% ใน 24 ชม.
+                </p>
+              </>
+            ) : (
+              <p style={{ color: COLORS.muted, fontSize: 13 }}>ราคาปัจจุบันไม่พร้อมใช้งานตอนนี้</p>
+            )}
+            <p style={{ fontSize: 10, color: COLORS.muted, marginTop: 10 }}>
+              Data provided by{" "}
+              <a href="https://www.coingecko.com/en/api" style={{ color: COLORS.muted }}>
+                CoinGecko
+              </a>
+            </p>
+          </div>
         </div>
-      </div>
+      </section>
+
+      <section
+        style={{
+          borderBottom: "1px solid " + COLORS.border,
+          background: "linear-gradient(120deg, #1a0507, #0b0b0d 65%)",
+          padding: "2.5rem 0",
+          overflow: "hidden",
+        }}
+      >
+        <p
+          className={display.className}
+          style={{
+            textAlign: "center",
+            fontSize: "clamp(22px, 4vw, 34px)",
+            margin: "0 0 28px",
+            padding: "0 1rem",
+          }}
+        >
+          ตลาดไม่เคยหยุด <span style={{ color: COLORS.accent }}>ข่าวก็ไม่ควรช้า</span>
+        </p>
+        <div className="ticker-track">
+          {tickerRow.map((coin, i) => (
+            <span
+              key={i}
+              className={display.className}
+              style={{ fontSize: 20, color: COLORS.muted, letterSpacing: 1 }}
+            >
+              {coin} <span style={{ color: COLORS.accent }}>·</span>
+            </span>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ padding: "3rem 2rem" }}>
+        <p className={display.className} style={{ fontSize: 20, letterSpacing: 1, marginBottom: 20 }}>
+          ทำไมต้องอ่านข่าวกับ CRYPTOAYR
+        </p>
+        <div className="feature-grid">
+          {FEATURES.map((f) => (
+            <div
+              key={f.title}
+              style={{
+                background: COLORS.surf,
+                border: "1px solid " + COLORS.border,
+                borderRadius: 10,
+                padding: 20,
+              }}
+            >
+              <div style={{ marginBottom: 12 }}>{f.icon}</div>
+              <p style={{ fontSize: 15, fontWeight: 700, margin: "0 0 6px" }}>{f.title}</p>
+              <p style={{ fontSize: 13, color: COLORS.muted, lineHeight: 1.6, margin: 0 }}>
+                {f.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ padding: "1rem 2rem 3rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
+          <p className={display.className} style={{ fontSize: 20, letterSpacing: 1 }}>
+            ข่าวล่าสุด
+          </p>
+          <Link href="/crypto/news" style={{ color: COLORS.accent, fontSize: 14 }}>
+            ดูทั้งหมด →
+          </Link>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+            gap: 16,
+            marginBottom: 24,
+          }}
+        >
+          {featured.map((n) => (
+            <Link
+              key={n.slug}
+              href={"/crypto/news/" + n.slug}
+              style={{
+                background: COLORS.surf,
+                border: "1px solid " + COLORS.border,
+                borderRadius: 10,
+                textDecoration: "none",
+                color: COLORS.text,
+                display: "block",
+                overflow: "hidden",
+              }}
+            >
+              <NewsThumb title={n.title} />
+              <div style={{ padding: 20 }}>
+                <p style={{ fontSize: 12, color: COLORS.accent, margin: "0 0 10px" }}>
+                  {n.source_name ?? "ข่าว"}
+                </p>
+                <p style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.5, margin: 0 }}>
+                  {n.title}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {rest.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {rest.map((n) => (
+              <Link
+                key={n.slug}
+                href={"/crypto/news/" + n.slug}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: "12px 16px",
+                  background: COLORS.surf,
+                  borderRadius: 8,
+                  textDecoration: "none",
+                  color: COLORS.text,
+                  fontSize: 14,
+                  flexWrap: "wrap",
+                  gap: 8,
+                }}
+              >
+                <span>{n.title}</span>
+                <span style={{ color: COLORS.muted }}>{n.source_name}</span>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {news.length === 0 && (
+          <p style={{ color: COLORS.muted, fontSize: 14 }}>
+            ยังไม่มีข่าวในระบบ รอ sync รอบถัดไป
+          </p>
+        )}
+      </section>
+
+      {homepageArticle && (
+        <section
+          style={{
+            padding: "3rem 2rem 4rem",
+            borderTop: "1px solid " + COLORS.border,
+            maxWidth: 860,
+            margin: "0 auto",
+          }}
+        >
+          <h2 className={display.className} style={{ fontSize: 22, margin: "0 0 20px" }}>
+            {homepageArticle.title}
+          </h2>
+          {homepageArticle.body_th.split("\n\n").map((para: string, i: number) => (
+            <p
+              key={i}
+              style={{ fontSize: 14, lineHeight: 1.8, color: COLORS.muted, margin: "0 0 1.1rem" }}
+            >
+              {para}
+            </p>
+          ))}
+        </section>
+      )}
     </div>
   );
 }
