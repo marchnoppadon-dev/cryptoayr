@@ -61,8 +61,7 @@ export default async function CryptoNewsListPage() {
           gap: 24px;
           font-size: 14px;
           color: ${COLORS.muted};
-          overflow-x: auto;
-          white-space: nowrap;
+          flex-wrap: wrap;
         }
         .news-grid {
           display: grid;
