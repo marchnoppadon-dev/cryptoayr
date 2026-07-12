@@ -180,8 +180,8 @@ export default async function HomePage() {
           CRYPTO<span style={{ color: COLORS.accent }}>AYR</span>
         </span>
         <div className="nav-links">
-          <Link href="/crypto/news" style={{ color: COLORS.text }}>ข่าว</Link>
-          <span>Indicator</span>
+          <Link href="/crypto/news" style={{ color: COLORS.muted, textDecoration: "none" }}>ข่าว</Link>
+          <Link href="/crypto/indicator" style={{ color: COLORS.text, textDecoration: "none" }}>Indicator</Link>
           <span>วิธีเทรด</span>
           <span>บอทเทรด</span>
         </div>
