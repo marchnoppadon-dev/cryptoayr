@@ -2,36 +2,38 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Script from "next/script";
 
-const GA_ID = "G-PS2VDBXPG5";
+const GA_ID = ""; // TODO: ใส่ Measurement ID ใหม่ของ cryptoayr เช่น "G-XXXXXXXXXX"
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://pixeldeskth.com"),
+  metadataBase: new URL("https://www.cryptoayr.com"),
   title: {
-    default: "pixeldeskth — แนะนำหนัง Netflix ดูอะไรดี",
-    template: "%s | pixeldeskth",
+    default: "CRYPTOAYR — ข่าวคริปโตภาษาไทย อัปเดตทุกวัน",
+    template: "%s | CRYPTOAYR",
   },
   description:
-    "แนะนำหนัง Netflix ดูอะไรดี รีวิวหนังพร้อมเช็คว่าดูได้ที่ไหนบ้าง อัปเดตทุกวัน",
+    "สรุปข่าวคริปโตวันนี้ ภาษาไทย อ่านง่าย อัปเดตทุกวัน พร้อมความรู้พื้นฐานบิทคอยน์คืออะไร คริปโตคืออะไร สำหรับมือใหม่และนักลงทุน",
   keywords: [
-    "แนะนำหนัง Netflix",
-    "ดูหนัง Netflix อะไรดี",
-    "รีวิวหนัง สปอยล์",
-    "หนังเรื่องนี้ดูได้ที่ไหน",
+    "ข่าวคริปโตวันนี้",
+    "บิทคอยน์คืออะไร",
+    "คริปโตคืออะไร",
+    "ราคาบิทคอยน์วันนี้",
+    "สรุปข่าวคริปโตประจำวัน",
   ],
   openGraph: {
     type: "website",
     locale: "th_TH",
-    siteName: "pixeldeskth",
-    title: "pixeldeskth — รีวิวหนัง ดูได้ที่ไหนบ้าง Netflix, Viu, HBO Max, Apple TV",
+    siteName: "CRYPTOAYR",
+    title: "CRYPTOAYR — ข่าวคริปโตภาษาไทย อัปเดตทุกวัน",
     description:
-      "รีวิวหนังภาษาไทยตรงประเด็น พร้อมเช็คว่าดูได้ที่ไหนบ้าง Netflix, Viu, HBO Max, Apple TV และแพลตฟอร์มอื่น",
-    // TODO: เพิ่ม images: ["/og-default.png"] ตอนมีไฟล์ banner/โลโก้จริงแล้ว
+      "สรุปข่าวคริปโตวันนี้ ภาษาไทย อ่านง่าย อัปเดตทุกวัน พร้อมความรู้พื้นฐานสำหรับมือใหม่และนักลงทุน",
+    images: ["/cryptoayr-hero-banner.webp"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "pixeldeskth — รีวิวหนัง ดูได้ที่ไหนบ้าง Netflix, Viu, HBO Max, Apple TV",
+    title: "CRYPTOAYR — ข่าวคริปโตภาษาไทย อัปเดตทุกวัน",
     description:
-      "รีวิวหนังภาษาไทยตรงประเด็น พร้อมเช็คว่าดูได้ที่ไหนบ้าง Netflix, Viu, HBO Max, Apple TV และแพลตฟอร์มอื่น",
+      "สรุปข่าวคริปโตวันนี้ ภาษาไทย อ่านง่าย อัปเดตทุกวัน พร้อมความรู้พื้นฐานสำหรับมือใหม่และนักลงทุน",
+    images: ["/cryptoayr-hero-banner.webp"],
   },
 };
 
@@ -43,18 +45,22 @@ export default function RootLayout({
   return (
     <html lang="th" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
-        <Script
-          src={"https://www.googletagmanager.com/gtag/js?id=" + GA_ID}
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${GA_ID}');
-          `}
-        </Script>
+        {GA_ID && (
+          <>
+            <Script
+              src={"https://www.googletagmanager.com/gtag/js?id=" + GA_ID}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_ID}');
+              `}
+            </Script>
+          </>
+        )}
         {children}
       </body>
     </html>
