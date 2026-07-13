@@ -55,8 +55,12 @@ export default function Nav({ active }: { active?: string }) {
         }
         .forex-menu {
           position: absolute;
-          top: calc(100% + 10px);
+          top: 100%;
           right: 0;
+          padding-top: 10px;
+          z-index: 20;
+        }
+        .forex-menu-inner {
           background: ${COLORS.surf};
           border: 1px solid ${COLORS.border};
           border-radius: 10px;
@@ -65,7 +69,6 @@ export default function Nav({ active }: { active?: string }) {
           display: flex;
           flex-direction: column;
           gap: 2px;
-          z-index: 20;
         }
         .forex-menu a {
           padding: 10px 12px;
@@ -121,11 +124,13 @@ export default function Nav({ active }: { active?: string }) {
 
           {forexOpen && (
             <div className="forex-menu">
-              {FOREX_LINKS.map((item) => (
-                <Link key={item.href} href={item.href}>
-                  {item.label}
-                </Link>
-              ))}
+              <div className="forex-menu-inner">
+                {FOREX_LINKS.map((item) => (
+                  <Link key={item.href} href={item.href}>
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
             </div>
           )}
         </div>
