@@ -181,9 +181,9 @@ export default async function HomePage() {
         </span>
         <div className="nav-links">
           <Link href="/crypto/news" style={{ color: COLORS.muted, textDecoration: "none" }}>ข่าว</Link>
-          <Link href="/crypto/indicator" style={{ color: COLORS.text, textDecoration: "none" }}>Indicator</Link>
-          <span>วิธีเทรด</span>
-          <span>บอทเทรด</span>
+          <Link href="/crypto/indicator" style={{ color: COLORS.muted, textDecoration: "none" }}>Indicator</Link>
+          <Link href="/crypto/how-to-trade" style={{ color: COLORS.muted, textDecoration: "none" }}>วิธีเทรด</Link>
+          <Link href="/crypto/bots" style={{ color: COLORS.muted, textDecoration: "none" }}>บอทเทรด</Link>
         </div>
         <span
           style={{
