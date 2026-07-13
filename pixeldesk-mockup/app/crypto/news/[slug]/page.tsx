@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Press_Start_2P } from "next/font/google";
 import Link from "next/link";
 import { supabase } from "../../../../lib/supabase";
+import Nav from "../../../../components/Nav";
 
 const pixelFont = Press_Start_2P({ subsets: ["latin"], weight: "400" });
 
@@ -108,7 +109,9 @@ export default async function CryptoNewsDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <nav style={{ fontSize: 12, color: COLORS.muted, marginBottom: "1.5rem" }}>
+      <Nav active="news" />
+
+      <nav style={{ fontSize: 12, color: COLORS.muted, marginBottom: "1.5rem", marginTop: "1.5rem" }}>
         <Link href="/" style={{ color: COLORS.muted }}>
           หน้าแรก
         </Link>{" "}

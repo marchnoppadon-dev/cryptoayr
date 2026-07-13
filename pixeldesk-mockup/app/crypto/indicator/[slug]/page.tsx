@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Anton, IBM_Plex_Sans_Thai } from "next/font/google";
 import { supabase } from "../../../../lib/supabase";
+import Nav from "../../../../components/Nav";
 
 const display = Anton({ subsets: ["latin"], weight: "400" });
 const thai = IBM_Plex_Sans_Thai({
@@ -28,7 +29,6 @@ async function getIndicator(slug: string) {
     .eq("pillar", "indicators")
     .eq("slug", slug)
     .maybeSingle();
-  console.log("DEBUG slug=" + slug + " error=" + JSON.stringify(result.error) + " hasData=" + !!result.data);
   return result;
 }
 
@@ -48,15 +48,7 @@ export default async function IndicatorDetailPage({ params }: { params: Promise<
   const debugResult = await getIndicator(slug);
   const item = debugResult.data;
 
-  if (!item) {
-    return (
-      <div style={{ background: "#0b0b0d", color: "#fff", padding: 40, fontFamily: "monospace" }}>
-        <h1>DEBUG: ไม่พบข้อมูล</h1>
-        <p>slug ที่ค้นหา: {slug}</p>
-        <p>error: {JSON.stringify(debugResult.error)}</p>
-      </div>
-    );
-  }
+  if (!item) notFound();
 
   let pros: string[] = [];
   let cons: string[] = [];
@@ -70,50 +62,9 @@ export default async function IndicatorDetailPage({ params }: { params: Promise<
   return (
     <div style={{ background: COLORS.bg, color: COLORS.text, minHeight: "100vh" }} className={thai.className}>
       <style>{`
-        .site-nav {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1.25rem 2rem;
-          border-bottom: 1px solid ${COLORS.border};
-          gap: 12px;
-          flex-wrap: wrap;
-        }
-        .nav-links {
-          display: flex;
-          gap: 24px;
-          font-size: 14px;
-          color: ${COLORS.muted};
-          flex-wrap: wrap;
-        }
-        @media (max-width: 720px) {
-          .site-nav { padding: 1rem 1.25rem; }
-        }
-      `}</style>
+        `}</style>
 
-      <nav className="site-nav">
-        <Link href="/" className={display.className} style={{ fontSize: 22, letterSpacing: 1, color: COLORS.text, textDecoration: "none" }}>
-          CRYPTO<span style={{ color: COLORS.accent }}>AYR</span>
-        </Link>
-        <div className="nav-links">
-          <Link href="/crypto/news" style={{ color: COLORS.muted, textDecoration: "none" }}>ข่าว</Link>
-          <Link href="/crypto/indicator" style={{ color: COLORS.text, textDecoration: "none" }}>Indicator</Link>
-          <span>วิธีเทรด</span>
-          <span>บอทเทรด</span>
-        </div>
-        <span
-          style={{
-            border: "1px solid " + COLORS.accent,
-            color: COLORS.accent,
-            fontSize: 13,
-            padding: "8px 16px",
-            borderRadius: 4,
-            whiteSpace: "nowrap",
-          }}
-        >
-          Forex →
-        </span>
-      </nav>
+      <Nav active="indicator" />
 
       <div style={{ padding: "2.5rem 2rem", maxWidth: 760, margin: "0 auto" }}>
         <nav style={{ fontSize: 12, color: COLORS.muted, marginBottom: "1rem" }}>

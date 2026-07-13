@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Anton, IBM_Plex_Sans_Thai } from "next/font/google";
 import { supabase } from "../../../lib/supabase";
+import Nav from "../../../components/Nav";
 
 const display = Anton({ subsets: ["latin"], weight: "400" });
 const thai = IBM_Plex_Sans_Thai({
@@ -51,22 +52,6 @@ export default async function IndicatorListPage() {
   return (
     <div style={{ background: COLORS.bg, color: COLORS.text, minHeight: "100vh" }} className={thai.className}>
       <style>{`
-        .site-nav {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1.25rem 2rem;
-          border-bottom: 1px solid ${COLORS.border};
-          gap: 12px;
-          flex-wrap: wrap;
-        }
-        .nav-links {
-          display: flex;
-          gap: 24px;
-          font-size: 14px;
-          color: ${COLORS.muted};
-          flex-wrap: wrap;
-        }
         .indicator-grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -77,29 +62,7 @@ export default async function IndicatorListPage() {
         }
       `}</style>
 
-      <nav className="site-nav">
-        <Link href="/" className={display.className} style={{ fontSize: 22, letterSpacing: 1, color: COLORS.text, textDecoration: "none" }}>
-          CRYPTO<span style={{ color: COLORS.accent }}>AYR</span>
-        </Link>
-        <div className="nav-links">
-          <Link href="/crypto/news" style={{ color: COLORS.muted, textDecoration: "none" }}>ข่าว</Link>
-          <Link href="/crypto/indicator" style={{ color: COLORS.text, textDecoration: "none" }}>Indicator</Link>
-          <span>วิธีเทรด</span>
-          <span>บอทเทรด</span>
-        </div>
-        <span
-          style={{
-            border: "1px solid " + COLORS.accent,
-            color: COLORS.accent,
-            fontSize: 13,
-            padding: "8px 16px",
-            borderRadius: 4,
-            whiteSpace: "nowrap",
-          }}
-        >
-          Forex →
-        </span>
-      </nav>
+      <Nav active="indicator" />
 
       <div style={{ padding: "2.5rem 2rem" }}>
         <nav style={{ fontSize: 12, color: COLORS.muted, marginBottom: "1rem" }}>

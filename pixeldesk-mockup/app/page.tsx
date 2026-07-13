@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Anton, IBM_Plex_Sans_Thai } from "next/font/google";
 import { supabase } from "../lib/supabase";
 import { fetchBitcoinPrice } from "../lib/coingecko";
+import Nav from "../components/Nav";
 
 const display = Anton({ subsets: ["latin"], weight: "400" });
 const thai = IBM_Plex_Sans_Thai({
@@ -119,36 +120,7 @@ export default async function HomePage() {
   return (
     <div style={{ background: COLORS.bg, color: COLORS.text }} className={thai.className}>
       <style>{`
-        .site-nav {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1.25rem 2rem;
-          border-bottom: 1px solid ${COLORS.border};
-          gap: 12px;
-          flex-wrap: wrap;
-        }
-        .nav-links {
-  display: flex;
-  gap: 24px;
-  font-size: 14px;
-  color: ${COLORS.muted};
-  overflow-x: auto;
-  white-space: nowrap;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.nav-links::-webkit-scrollbar {
-  display: none;
-}
-        .nav-links a, .nav-links span {
-          white-space: nowrap;
-        }
-        @media (max-width: 720px) {
-          .site-nav {
-            padding: 1rem 1.25rem;
-          }
-        }
+        
         .ticker-track {
           display: flex;
           gap: 48px;
@@ -175,29 +147,7 @@ export default async function HomePage() {
         }
       `}</style>
 
-      <nav className="site-nav">
-        <span className={display.className} style={{ fontSize: 22, letterSpacing: 1 }}>
-          CRYPTO<span style={{ color: COLORS.accent }}>AYR</span>
-        </span>
-        <div className="nav-links">
-          <Link href="/crypto/news" style={{ color: COLORS.muted, textDecoration: "none" }}>ข่าว</Link>
-          <Link href="/crypto/indicator" style={{ color: COLORS.muted, textDecoration: "none" }}>Indicator</Link>
-          <Link href="/crypto/how-to-trade" style={{ color: COLORS.muted, textDecoration: "none" }}>วิธีเทรด</Link>
-          <Link href="/crypto/bots" style={{ color: COLORS.muted, textDecoration: "none" }}>บอทเทรด</Link>
-        </div>
-        <span
-          style={{
-            border: "1px solid " + COLORS.accent,
-            color: COLORS.accent,
-            fontSize: 13,
-            padding: "8px 16px",
-            borderRadius: 4,
-            whiteSpace: "nowrap",
-          }}
-        >
-          Forex →
-        </span>
-      </nav>
+      <Nav />
 
       <section
         style={{
