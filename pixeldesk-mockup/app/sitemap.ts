@@ -19,6 +19,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  const { data: indicators } = await supabase
+    .from("articles")
+    .select("slug, updated_at")
+    .eq("vertical", "crypto")
+    .eq("pillar", "indicators");
+
+  const indicatorUrls: MetadataRoute.Sitemap = (indicators ?? []).map((i) => ({
+    url: BASE_URL + "/crypto/indicator/" + i.slug,
+    lastModified: i.updated_at ? new Date(i.updated_at) : new Date(),
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
+
   const staticUrls: MetadataRoute.Sitemap = [
     {
       url: BASE_URL,
@@ -32,7 +45,54 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "hourly",
       priority: 0.9,
     },
+    {
+      url: BASE_URL + "/crypto/indicator",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: BASE_URL + "/crypto/how-to-trade",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: BASE_URL + "/crypto/bots",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: BASE_URL + "/forex",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: BASE_URL + "/forex/bots",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: BASE_URL + "/forex/demo",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: BASE_URL + "/forex/indicator",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: BASE_URL + "/forex/courses",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
   ];
-
-  return [...staticUrls, ...newsUrls];
+  return [...staticUrls, ...newsUrls, ...indicatorUrls];
 }
