@@ -380,10 +380,6 @@ export default async function HomePage() {
         )}
       </section>
 
-      <div style={{ padding: 20, background: "#111", color: "#0f0", fontSize: 12, fontFamily: "monospace" }}>
-        DEBUG homepageArticle: {JSON.stringify(homepageArticle)}
-      </div>
-
       {homepageArticle && (
         <section
           style={{
