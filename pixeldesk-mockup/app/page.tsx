@@ -10,7 +10,7 @@ const thai = IBM_Plex_Sans_Thai({
   weight: ["400", "500", "700"],
 });
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 const COLORS = {
   bg: "#0b0b0d",
@@ -379,6 +379,10 @@ export default async function HomePage() {
           </p>
         )}
       </section>
+
+      <div style={{ padding: 20, background: "#111", color: "#0f0", fontSize: 12, fontFamily: "monospace" }}>
+        DEBUG homepageArticle: {JSON.stringify(homepageArticle)}
+      </div>
 
       {homepageArticle && (
         <section
