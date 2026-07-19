@@ -100,6 +100,12 @@ export default async function CryptoNewsDetailPage({
     headline: news.title,
     datePublished: news.created_at,
     articleBody: news.long_content_th ?? undefined,
+    image: ["https://www.cryptoayr.com/cryptoayr-hero-banner.webp"],
+    author: {
+      "@type": "Organization",
+      name: "cryptoayr",
+      url: "https://www.cryptoayr.com",
+    },
   };
 
   return (
